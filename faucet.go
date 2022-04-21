@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"html/template"
 	"math"
-	"math/big"
 	"net/http"
 	"strconv"
 	"strings"
@@ -51,7 +50,8 @@ var (
 )
 
 var (
-	ether = new(big.Int).Exp(big.NewInt(10), big.NewInt(18), nil)
+	// ether = new(big.Int).Exp(big.NewInt(10), big.NewInt(18), nil)
+	ether = 1000_000_000_000_000_000
 )
 
 func main() {

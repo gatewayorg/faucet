@@ -60,7 +60,7 @@ func initFaucet() {
 	fromAddress = crypto.PubkeyToAddress(*publicKeyECDSA)
 }
 
-func SendTx(amount *big.Int, toAddress string) error {
+func SendTx(amount int64, toAddress string) error {
 	ctx := context.Background()
 	nonce, err := faucet.client.PendingNonceAt(ctx, fromAddress)
 	if err != nil {
@@ -76,7 +76,7 @@ func SendTx(amount *big.Int, toAddress string) error {
 	}
 	to := common.HexToAddress(toAddress)
 	var data []byte
-	tx := types.NewTransaction(nonce, to, amount, gasLimit, gasPrice, data)
+	tx := types.NewTransaction(nonce, to, big.NewInt(amount), gasLimit, gasPrice, data)
 	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(big.NewInt(*chainID)), privateKey)
 	if err != nil {
 		log.Error(err)
@@ -141,9 +141,8 @@ func OnWebsocket(w http.ResponseWriter, r *http.Request) {
 		)
 		if timeout = faucet.timeouts[msg.URL]; time.Now().After(timeout) {
 			// User wasn't funded recently, create the funding transaction
-			amount := new(big.Int).Mul(big.NewInt(int64(*payoutFlag)), ether)
-			amount = new(big.Int).Mul(amount, new(big.Int).Exp(big.NewInt(5), big.NewInt(int64(msg.Tier)), nil))
-			amount = new(big.Int).Div(amount, new(big.Int).Exp(big.NewInt(2), big.NewInt(int64(msg.Tier)), nil))
+			p := (*payoutFlag + float64(msg.Tier)) * (*startFlag) * float64(ether)
+			amount, _ := big.NewFloat(p).Int64()
 
 			// Submit the transaction and mark as funded if successful
 			if err := SendTx(amount, msg.URL); err != nil {
