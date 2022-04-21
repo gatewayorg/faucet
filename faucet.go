@@ -42,6 +42,7 @@ var (
 	crt          = flag.String("crt", "tls.crt", "certificate file")
 	captchaToken = flag.String("captcha.token", "", "Recaptcha site key to authenticate client side")
 	tiersFlag    = flag.Int("faucet.tiers", 2, "Number of funding tiers to enable (x3 time, x2.5 funds)")
+	startFlag    = flag.Float64("faucet.start", 0.1, "Number of funding tiers to enable (x3 time, x2.5 funds)")
 	UnitFlag     = flag.String("unit", "Edge", "token unit")
 	payoutFlag   = flag.Float64("faucet.amount", 1.0, "Number of unit to pay out per user request")
 	minutesFlag  = flag.Int("faucet.minutes", 1440, "Number of minutes to wait between funding rounds")
@@ -66,7 +67,7 @@ func main() {
 	periods := make([]string, *tiersFlag)
 	for i := 0; i < *tiersFlag; i++ {
 		// Calculate the amount for the next tier and format it
-		amount := (*payoutFlag + float64(i)) * 0.5
+		amount := (*payoutFlag + float64(i)) * (*startFlag)
 		amounts[i] = fmt.Sprintf("%s %s", strconv.FormatFloat(amount, 'f', -1, 64), *UnitFlag)
 		if amount == 1 {
 			amounts[i] = strings.TrimSuffix(amounts[i], "s")
