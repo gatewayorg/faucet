@@ -32,6 +32,7 @@ import (
 )
 
 var (
+	apiName  = flag.String("name", "BAS", "faucet name")
 	apiPort  = flag.String("apiport", "8080", "Listener port for the HTTP API connection")
 	apiAddr  = flag.String("apiaddr", "127.0.0.1", "Listener Address")
 	apiHttps = flag.Bool("https", false, "https service flag")
@@ -96,6 +97,7 @@ func main() {
 	}
 	website := new(bytes.Buffer)
 	err = template.Must(template.New("").Parse(string(tmpl))).Execute(website, map[string]interface{}{
+		"Name":      *apiName,
 		"Amounts":   amounts,
 		"Periods":   periods,
 		"Recaptcha": *captchaToken,
